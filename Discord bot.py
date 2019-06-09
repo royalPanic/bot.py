@@ -28,7 +28,7 @@ async def on_message(message):
     if message.author == client.user:
         return
 
-    if message.author.id == 246297096595046401:
+    if message.author.id == 246297096595046401: # Eval can be very dangerous for the server hoster so it is only to be used by the bot owner
         if message.content.startswith(PREFIX+'eval'):
             cont=message.content.split("$$")
             cont=str(cont[1])
