@@ -8,6 +8,7 @@ data=json.load(r)
 ConfigJSON=list(data.values())
 PREFIX=ConfigJSON[0]
 TOKEN=ConfigJSON[1]
+WEATHERTOKEN=ConfigJSON[2]
 availableroles=[]
 with open("roles.txt","r") as s:
     for x in s:
@@ -28,7 +29,7 @@ async def on_message(message):
     if message.author == client.user:
         return
 
-    if message.author.id == 246297096595046401: # Eval can be very dangerous for the server hoster so it is only to be used by the bot owner
+    if message.author.id == 246297096595046401:
         if message.content.startswith(PREFIX+'eval'):
             cont=message.content.split("$$")
             cont=str(cont[1])
@@ -41,6 +42,14 @@ async def on_message(message):
 
     if message.content.startswith(PREFIX+'hello'):
         await message.channel.send('Hello!')
+
+    if message.content.startswith(PREFIX+'tiquations'):
+        cont=message.content.split("$$")
+        if cont[:10] == "tiquations":
+            res=eval(cont[1])
+            await message.channel.send(res)
+        else:
+            await message.channel.send("This is only for testing tiquations.")
 
     #THIS BOT WAS MADE FOR ONE SERVER ONLY. ANY COMMANDS AFTER THIS WILL NOT WORK IN ANY OTHER SERVER.
 
