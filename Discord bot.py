@@ -42,6 +42,13 @@ async def check_if_moderator(ctx):
     else:
         return False
 
+async def check_if_mentor(ctx):
+    #if await check_if_mentor(ctx):
+    if "Mentors" in [role.name for role in ctx.message.author.roles] or "Moderators" in [role.name for role in ctx.message.author.roles]:
+        return True
+    else:
+        return False
+
 async def check_if_burnt(ctx):
     #if await check_if_burnt(ctx):
     if ctx.message.author.id == 246297096595046401:
@@ -59,45 +66,48 @@ async def grant(ctx):
 
 @client.command(pass_context=True)
 async def ticket(ctx, *, info):
-    print(info)
-    if await check_if_server(ctx):
-        try:
-            channelr = client.get_channel(587426608265035776)
-            personID=ctx.message.author.id
-            personName=str(ctx.message.author)
-            date=datetime.datetime.now()
-            with open('tickets.json') as f:
-                data = json.load(f)
-                TicketID=len(data)
-                a_dict = {TicketID:{"ID": personID,
-                "User": personName,
-                "Date": str(date),
-                "Ticket": info,
-                "RespondedTo": "False",
-                "Responder": "False",
-                "Response": "False",
-                "ResponseDate": "False"}}
-
-                data.update(a_dict)
-
-                with open('tickets.json', 'w') as f:
-                    json.dump(data, f)
-
+    try:
+        if await check_if_server(ctx):
+            try:
+                channelr = client.get_channel(587673937589174429)
+                personID=ctx.message.author.id
+                personName=str(ctx.message.author)
+                date=datetime.datetime.now()
                 with open('tickets.json') as f:
                     data = json.load(f)
-            print(info)
-            ToSend= "\n\n`Ticket ID: ",str(TicketID),"`"
-            ToSend =''.join(ToSend)
-            ToSend=info+ToSend
-            await channelr.send(ToSend)
-            memberpls = discord.utils.get(ctx.message.guild.members, id=ctx.message.author.id)
-            SENDME='Your ticket has been sent and will be reviewed as soon as possible. Ticket ID:',TicketID
-            p=f'{SENDME[0]} {SENDME[1]}'
-            await memberpls.send(p)
-            await ctx.message.channel.send(':white_check_mark: Ticket sent successfully.')
-        except Exception as e:
-            print(e)
-            await ctx.message.channel.send(':no_entry_sign: ERROR. Usage: -ticket INFO HERE ABOUT YOUR PROBLEM')
+                    TicketID=len(data)
+                    a_dict = {TicketID:{"ID": personID,
+                    "User": personName,
+                    "Date": str(date),
+                    "Ticket": info,
+                    "RespondedTo": "False",
+                    "Responder": "False",
+                    "Response": "False",
+                    "ResponseDate": "False"}}
+
+                    data.update(a_dict)
+
+                    with open('tickets.json', 'w') as f:
+                        json.dump(data, f)
+
+                    with open('tickets.json') as f:
+                        data = json.load(f)
+                print(info)
+                ToSend= "\n\n`Ticket ID: ",str(TicketID),"`"
+                ToSend =''.join(ToSend)
+                ToSend=info+ToSend
+                await channelr.send(ToSend)
+                memberpls = discord.utils.get(ctx.message.guild.members, id=ctx.message.author.id)
+                SENDME='Your ticket has been sent and will be reviewed as soon as possible. Ticket ID:',TicketID
+                p=f'{SENDME[0]} {SENDME[1]}'
+                await memberpls.send(p)
+                await ctx.message.channel.send(':white_check_mark: Ticket sent successfully.')
+            except Exception as e:
+                print(e)
+                await ctx.message.channel.send(':no_entry_sign: ERROR. Usage: -ticket INFO HERE ABOUT YOUR PROBLEM')
+    except Exception as e:
+        print(e)
+        await ctx.message.channel.send(':no_entry_sign: ERROR. Usage: -ticket INFO HERE ABOUT YOUR PROBLEM')
 
 @client.command(pass_context=True)
 async def ticketinfo(ctx, ticketID, inputs):
@@ -115,41 +125,58 @@ async def ticketinfo(ctx, ticketID, inputs):
 @client.command(pass_context=True)
 async def respond(ctx, ticketID, *, info):
     if await check_if_server(ctx):
-        try:
-            with open('tickets.json') as f:
-                data = json.load(f)
-                respondeer=str(ctx.message.author.name)
-                personId=data[ticketID]["ID"]
-                personname=data[ticketID]["User"]
-                infoW=data[ticketID]["Ticket"]
-                dateorig=data[ticketID]["Date"]
-                dater=datetime.datetime.now()
-                a_dict = {ticketID:{"ID": personId,
-                "User": personname,
-                "Date": str(dateorig),
-                "Ticket": info,
-                "RespondedTo": "True",
-                "Responder": respondeer,
-                "Response": infoW,
-                "ResponseDate":str(dater)}}
-
-                data.update(a_dict)
-
-                with open('tickets.json', 'w') as f:
-                    json.dump(data, f)
-
+        if await check_if_mentor(ctx):
+            try:
                 with open('tickets.json') as f:
                     data = json.load(f)
+                    respondeer=str(ctx.message.author.name)
+                    personId=data[ticketID]["ID"]
+                    personname=data[ticketID]["User"]
+                    infoW=data[ticketID]["Ticket"]
+                    dateorig=data[ticketID]["Date"]
+                    dater=datetime.datetime.now()
+                    a_dict = {ticketID:{"ID": personId,
+                    "User": personname,
+                    "Date": str(dateorig),
+                    "Ticket": infoW,
+                    "RespondedTo": "True",
+                    "Responder": respondeer,
+                    "Response": info,
+                    "ResponseDate":str(dater)}}
 
-            stron="Response to your ticket",ticketID,"\n",info
-            embed =discord.Embed(title="Ticket ID", description=ticketID, color=0x4fe5c1)
-            embed.add_field(name="Response:", value=info, inline=False)
-            memberpls = discord.utils.get(ctx.message.guild.members, id=personId)
-            await memberpls.send(embed=embed)
-            await ctx.message.channel.send(":white_check_mark: Success!")
-        except Exception as e:
-            print(e)
-            await ctx.message.channel.send(":no_entry_sign: ERROR Usage: -respond ticketID RESPONSE HERE...")
+                    data.update(a_dict)
+
+                    with open('tickets.json', 'w') as f:
+                        json.dump(data, f)
+
+                    with open('tickets.json') as f:
+                        data = json.load(f)
+
+                stron="Response to your ticket",ticketID,"\n",info
+                embed =discord.Embed(title="Ticket ID", description=ticketID, color=0x4fe5c1)
+                embed.add_field(name="Response:", value=info, inline=False)
+                embed.add_field(name="Responder:", value=ctx.message.author, inline=False)
+                memberpls = discord.utils.get(ctx.message.guild.members, id=personId)
+                await memberpls.send(embed=embed)
+                await ctx.message.channel.send(":white_check_mark: Success!")
+            except Exception as e:
+                print(e)
+                await ctx.message.channel.send(":no_entry_sign: ERROR Usage: -respond ticketID RESPONSE HERE...")
+
+@client.command(pass_context=True)
+async def tickets(ctx):
+    if await check_if_server(ctx):
+        if await check_if_mentor(ctx):
+            with open('tickets.json') as f:
+                data = json.load(f)
+                info=""
+                for id in range(len(data)):
+                    ResponseTo = data[str(id)]["RespondedTo"]
+                    infor=id,"-",ResponseTo,"\n"
+                    info2=f'{infor[0]} - {infor[2]}\n'
+                    info=info+info2
+            embed =discord.Embed(title="Resonses", description=info, color=0x9ae1c1)
+            await ctx.message.channel.send(embed=embed)
 
 
 @client.command(pass_context=True)
