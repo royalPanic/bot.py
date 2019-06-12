@@ -175,7 +175,7 @@ async def tickets(ctx):
                     infor=id,"-",ResponseTo,"\n"
                     info2=f'{infor[0]} - {infor[2]}\n'
                     info=info+info2
-            embed =discord.Embed(title="Resonses", description=info, color=0x9ae1c1)
+            embed =discord.Embed(title="Responses", description=info, color=0x9ae1c1)
             await ctx.message.channel.send(embed=embed)
 
 
